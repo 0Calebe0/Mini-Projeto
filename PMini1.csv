@@ -1,29 +1,116 @@
-﻿"Tabela 9740 - Indicador 7.1.1 - Percentual de moradores em domicílios com energia elétrica"
-"Variável - Percentual de moradores em domicílios com energia elétrica (%)"
-"Nível";"Brasil e Grande Região";"Ano"
-"Nível";"Brasil e Grande Região";"2018";"2019";"2022";"2023"
-"BR";"Brasil";"99,7";"99,8";"99,8";"99,8"
-"GR";"Norte";"98,8";"98,8";"99,1";"98,9"
-"GR";"Nordeste";"99,5";"99,6";"99,7";"99,7"
-"GR";"Sudeste";"100,0";"100,0";"100,0";"100,0"
-"GR";"Sul";"99,9";"100,0";"99,9";"99,9"
-"GR";"Centro-Oeste";"99,9";"99,9";"100,0";"99,9"
-"Fonte: IBGE - Pesquisa Nacional por Amostra de Domicílios Contínua Anual - 1ª visita."
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Gráfico - Percentual de moradores com energia elétrica</title>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    :root{font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial}
+    body{margin:24px;background:#f7f7fb;color:#111}
+    .card{max-width:960px;margin:0 auto;background:#fff;border-radius:12px;padding:20px;box-shadow:0 6px 18px rgba(17,24,39,0.06)}
+    h1{font-size:20px;margin:0 0 10px}
+    p{margin:0 0 16px;color:#475569}
+    canvas{width:100%!important;height:480px!important}
+    .legend-note{font-size:13px;color:#64748b;margin-top:12px}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Tabela 9740 — Indicador 7.1.1</h1>
+    <p>Percentual de moradores em domicílios com energia elétrica (%) — Anos: 2018, 2019, 2022, 2023
+    <br><small>Fonte: IBGE — PNAD Contínua Anual (1ª visita)</small></p>
 
-""
-"Legenda"
-"Símbolo";"Significado"
-"-";"Zero absoluto, não resultante de um cálculo ou arredondamento.
-Ex: Em determinado município não existem pessoas de 14 anos de idade sem instrução."
-"0";"Zero resultante de um cálculo ou arredondamento.
-Ex: A inflação do feijão em determinada Região Metropolitana foi 0.
-Determinado município produziu 400 kg de sementes de girassol e os dados da tabela são expressos em toneladas."
-"X";"Valor inibido para não identificar o informante.
-Ex: Determinado município só possui uma empresa produtora de cimento, logo o valor de sua produção deve ser inibido."
-"..";"Valor não se aplica.
-Ex: Não se pode obter o total da produção agrícola em determinado município quando os produtos agrícolas são contabilizados com unidades de medida distintas."
-"...";"Valor não disponível.
-Ex: A produção de feijão em determinado município não foi pesquisada ou determinado município não existia no ano da pesquisa."
-"A a Z
-(exceto X)";"Significa uma faixa de valores. Varia em função da tabela (se for o caso).
-Ex: O nível de precisão da produção estimada de combustíveis está na faixa A (95 a 100%)"
+    <canvas id="energiaChart"></canvas>
+    <div class="legend-note">Dica: passe o mouse sobre os pontos para ver os valores exatos.</div>
+  </div>
+
+  <script>
+    // Dados originais (convertidos a números)
+    const anos = [2018, 2019, 2022, 2023];
+
+    const datasets = [
+      {
+        label: 'Brasil',
+        data: [99.7, 99.8, 99.8, 99.8],
+        tension: 0.2,
+        fill: false,
+      },
+      {
+        label: 'Norte',
+        data: [98.8, 98.8, 99.1, 98.9],
+        tension: 0.2,
+        fill: false,
+      },
+      {
+        label: 'Nordeste',
+        data: [99.5, 99.6, 99.7, 99.7],
+        tension: 0.2,
+        fill: false,
+      },
+      {
+        label: 'Sudeste',
+        data: [100.0, 100.0, 100.0, 100.0],
+        tension: 0.2,
+        fill: false,
+      },
+      {
+        label: 'Sul',
+        data: [99.9, 100.0, 99.9, 99.9],
+        tension: 0.2,
+        fill: false,
+      },
+      {
+        label: 'Centro-Oeste',
+        data: [99.9, 99.9, 100.0, 99.9],
+        tension: 0.2,
+        fill: false,
+      }
+    ];
+
+    // Chart.js will pick default colors if none provided. To keep a clean look we let Chart.js choose.
+    const ctx = document.getElementById('energiaChart').getContext('2d');
+    const energiaChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: anos,
+        datasets: datasets.map(ds => ({
+          ...ds,
+          borderWidth: 2,
+          pointRadius: 5,
+          pointHoverRadius: 7,
+          backgroundColor: undefined // let Chart.js assign
+        }))
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {position: 'bottom'},
+          tooltip: {
+            callbacks: {
+              label: ctx => `${ctx.dataset.label}: ${ctx.formattedValue}%`
+            }
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: false,
+            suggestedMin: 95,
+            suggestedMax: 101,
+            ticks: {
+              callback: value => `${value}%`
+            },
+            title: {display:true,text:'Percentual (%)'}
+          },
+          x: {
+            title: {display:true,text:'Ano'}
+          }
+        },
+        interaction: {mode: 'nearest', intersect: false}
+      }
+    });
+  </script>
+</body>
+</html>
